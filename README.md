@@ -18,7 +18,8 @@ Assisted Partition Manager doesn't run well as there's 2 partitions through Appl
 My way is to create :
 - a 1st partition of 256MB with EFI label
 - a 2nd one as EXT4 with the rest of the empty space, with "discard" and "noatime"
-- to have a light VM, install only "ususla utilities"
+- to have a light VM, install only "usual utilities"
+- for SSH access, add "SSH server"
 
 ## Add Cut and Paste function :
 ```bash
@@ -37,26 +38,42 @@ later tips to come to adjust keyboard settings
 *Apple Framework considers keyboard only in ANSI configuration*
 *but I believe what a swap-key tips could make the job*
 
-## Configure console fonts size
-```bash
-sudo dpkg-reconfigure console-setup
+On /etc/default/keyboard, to have full access to mac keyboard combinaisons:
 ```
-*My choice is "Terminus Font", "16x32" size*
-*At this size, the font size is coherent with the Retina resolution of the screen*
-*There's a 2x factor*
+XKBOPTIONS="lv3:switch,compose:lwin”
+```
 
 ## Minimal Desktop
 ```bash
-sudo apt install gnome-shell gnome-console nautilus plymouth-themes -y && sudo reboot
+sudo apt install gnome-shell gnome-console nautilus plymouth-themes -y
+sudo apt autoremove --purge gnome-shell-extension-prefs -y
 ```
-*Sometimes, VM handles when installing desktop environment*
-*The "reboot" command permits to not shutdown unproperly the VM system.*
- 
+Flatpak is usefull to manage easily gnome extensions :
+```
+sudo apt install gnome-software-plugin-flatpak -y
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak update
+flatpak install com.mattjakeman.ExtensionManager
+```
 
 ## Adjust boot
 *Because we are in a VM, there's no need to wait for Grub boot time."
 ```bash
 sudo plymouth-set-default-theme -R bgrt
+```
+then edit grub :
+```bash
+sudo nano /etc/default/grub
+```
+And change the configuration :
+```
+GRUB_CMDLINE_LINUX_DEFAULT="fsck.mode=skip quiet splash loglevel=3
+GRUB_BACKGROUND=""
+GRUB_TIMEOUT=0
+```
+Then update the configuration :
+```bash
+sudo update-grub
 ```
 
 ## Adjust desktop scale
@@ -77,3 +94,13 @@ then :
 sudo glib-compile-schemas /usr/share/glib-2.0/schemas
 ```
 
+## Adjust network interface
+```bash
+sudo nano /etc/network/interfaces.conf
+```
+and remove everything after :
+```
+auto lo
+iface lo inet loopback
+```
+*Gnome can now manage the network*
