@@ -21,6 +21,15 @@ My way is to create :
 - to have a light VM, install only "usual utilities"
 - for SSH access, add "SSH server"
 
+## basic CLI system
+Access to the VM through hostname.local :
+```bash
+sudo apt install avahi-daemon
+sudo systemctl enable avahi-ademon
+sudo systemctl start avahi-ademon
+```
+
+# Advanced system
 ## Add Cut and Paste function :
 ```bash
 sudo apt update
